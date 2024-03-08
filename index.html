@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body>
     <div class="container">
       <ul id="list" class="comments">
@@ -99,12 +100,12 @@
       listElement.innerHTML = oldListHtml +
       `<li class="comment">
           <div class="comment-header">
-            <div>${nameInputElement}</div>
+            <div>${nameInputElement.value}</div>
             <div> ${date.toLocaleDateString('ru', time)}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${textInputElement}
+              ${textInputElement.value}
             </div>
           </div>
           <div class="comment-footer">
@@ -112,7 +113,7 @@
               <span class="likes-counter">0</span>
               <button class="like-button"></button>
             </div>
-          </div> //
+          </div> 
         </li>`
     });
     console.log("It works!");
