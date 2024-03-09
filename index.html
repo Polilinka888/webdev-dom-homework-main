@@ -16,7 +16,7 @@
       <textarea id="text-input" type="textarea" class="add-form-text" placeholder="Введите ваш коментарий"
         rows="4"></textarea>
       <div class="add-form-row">
-        <button id="add-form-button" class="add-form-button">Написать</button>
+        <button id="add-button" class="add-form-button">Написать</button>
       </div>
     </div>
   </div>
@@ -28,16 +28,16 @@
 </style>
 <script>
   "use strict";
-  const buttonElement = document.getElementById("add-form-button");
-  const nameInputElement = document.getElementById("name-input");
-  const textInputElement = document.getElementById("text-input");
+  const buttonElement = document.getElementById("add-button");
+  const inputElement = document.getElementById("name-input");
+  const textareaElement = document.getElementById("text-input");
   const listElement = document.getElementById("list");
   const likesElements = document.querySelectorAll(".likes");
-  const likeButtonElements = document.querySelectorAll (".like-button");
+  const likeButtonElements = document.querySelectorAll(".like-button");
 
   const initEventListener = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
-    
+
     likeButtonElements.forEach((el, index) => {
       el.addEventListener('click', (event) => {
         event.stopImmediatePropagation();
@@ -68,18 +68,18 @@
       isLike: false,
     }
   ]
- 
+
   const renderComments = () => {
     const listElement = document.getElementById("list");
     const commentsHtml = comments.map((comment, index) => {
       return `<li class="comment">
         <div class="comment-header">
-          <div> ${comment.name}</div>
+          <div class="comment-name"> ${sanitizeHtml(comment.name)}</div>
           <div> ${comment.time} </div>
         </div>
         <div class="comment-body">
           <div class="comment-text">
-            ${comment.comment}
+            ${sanitizeHtml(comment.comment)}
           </div>
         </div>
         <div class="comment-footer">
@@ -87,7 +87,7 @@
             <span class="likes-counter">
               <div>${comment.like}</div>
             </span>
-            <button class="${comment.isLike ? 'like-button -active-like': 'like-button'}" data-index ="${index}">
+            <button class="${comment.isLike ? 'like-button -active-like' : 'like-button'}" data-index ="${index}">
             <div></div>
             </button>
           </div>
@@ -96,54 +96,63 @@
     }).join('');
     listElement.innerHTML = commentsHtml;
     initEventListener();
+    answerComment()
   };
   renderComments();
-  const commentBody = document.querySelector(".comment-body")
 
-
-  let time = {
-    hour: 'numeric',
-    minute: 'numeric',
-  };
-  let year = {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-  };
   buttonElement.addEventListener('click', () => {
-    const date = new Date()
-    nameInputElement.classList.remove("error");
-    textInputElement.classList.remove("error");
-    if (nameInputElement.value === "") {
-      nameInputElement.classList.add("error");
+    const oldListElement = listElement.innerHTML;
+    if (inputElement.value === '' && textareaElement.value === '') {
+      inputElement.style.backgroundColor = 'red';
+      textareaElement.style.backgroundColor = 'red';
       return;
-    }
-    if (textInputElement.value === "") {
-      textInputElement.classList.add("error");
+    } else if (inputElement.value === '') {
+      inputElement.style.backgroundColor = 'red';
       return;
-    }
-    const oldListHtml = listElement.innerHTML;
-    listElement.innerHTML = oldListHtml +
-      `<li class="comment">
-          <div class="comment-header">
-            <div>${nameInputElement.value}</div>
-            <div> ${date.toLocaleDateString('ru', time)}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${textInputElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter"></span>
-              <button class="like-button"></button>
-            </div>
-          </div> 
-        </li>`;
+    } else if (textareaElement.value === ''){
+      textareaElement.style.backgroundColor = 'red';
+      return;
+    } else {
+      inputElement.style.backgroundColor = ''
+      textareaElement.style.backgroundColor = ''
 
-        initEventListeners ();
-  });
+      let addTimeElement = new Date();
+      let year = addTimeElement.getFullYear().toString().slice(-2);
+      let minutes = addTimeElement.getMinutes() < 10 ? '0' + addTimeElement.getMinutes() : addTimeElement.getMinutes();
+      let hours = addTimeElement.getHours() < 10 ? '0' + addTimeElement.getHours() : addTimeElement.getHours();
+      let date = addTimeElement.getDate() < 10 ? '0' + addTimeElement.getDate() : addTimeElement.getDate();
+      let month = addTimeElement.getMonth() < 10 ? '0' + addTimeElement.getMonth() : addTimeElement.getMonth();
+      let newDate = `${date}.${month.slice(-1) + 1}.${year}
+      ${hours}:${minutes}`;
+
+      comments.push({
+        name: inputElement.value,
+        time: newDate,
+        comment: textareaElement.value,
+        like: 0,
+        isLike: false,
+      })
+
+      inputElement.value = '';
+      textareaElement.value = '';
+    };
+    renderComments(); 
+  })
+
+  function sanitizeHtml(htmlString) {
+    return htmlString.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  };
+
+  function answerComment() {
+    const commentsAnswer = document.querySelectorAll('.comment');
+    const formText = document.querySelector('.add-form-text');
+
+    comments.forEach((comment, index) => {
+      comment.addEventListener('click', () => {
+        formText.value = `>${comments[index].name} \n ${comments[index].comment}`
+      })
+    })
+  }
 
   console.log("It works!");
 </script>
