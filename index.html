@@ -147,7 +147,7 @@
     const commentsAnswer = document.querySelectorAll('.comment');
     const formText = document.querySelector('.add-form-text');
 
-    comments.forEach((comment, index) => {
+     commentsAnswer.forEach((comment, index) => {
       comment.addEventListener('click', () => {
         formText.value = `>${comments[index].name} \n ${comments[index].comment}`
       })
