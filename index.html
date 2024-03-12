@@ -21,19 +21,56 @@
     </div>
   </div>
 </body>
-<style>
-  .error {
-    background-color: rgb(226, 93, 93);
-  }
-</style>
 <script>
   "use strict";
+
   const buttonElement = document.getElementById("add-button");
   const inputElement = document.getElementById("name-input");
   const textareaElement = document.getElementById("text-input");
   const listElement = document.getElementById("list");
   const likesElements = document.querySelectorAll(".likes");
   const likeButtonElements = document.querySelectorAll(".like-button");
+
+  function fetchComments() {
+    return fetch("https://wedev-api.sky.pro/api/v1/:personal-key/comments" + "/comments")
+    .then((res) => res.json())
+    .then((responseData) => {
+      const appComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          date: new Data(comment.date),
+          text: comment.text,
+          likes: comment.likes,
+          isLiked: false,
+        };
+      });
+      return appComments;
+    });
+  }
+
+  function postComment(text, name) {
+    return fetch("https://wedev-api.sky.pro/api/v1/:personal-key/comments" + "/comments", {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+        name,
+      }),
+    })
+    .then((Response) => {
+      if (response.status === 500) {
+        throw new Error("Ошибка сервера");
+      }
+      if (response.status === 400) {
+        throw new Error("Неверный запрос");
+      }
+    })
+    .then(() => () => delay())
+    .then(() => {
+      return fetchComments();
+    })
+    .then((data) => delay(data));
+  }
+
 
   const initEventListener = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
@@ -49,29 +86,16 @@
           comments[index].isLike = false;
         }
         renderComments();
-      })
-    })
-  }
-  const comments = [
-    {
-      name: "Глеб Фокин",
-      time: "12.02.22 12:18",
-      comment: "Это будет первый комментарий на этой странице",
-      like: 3,
-      isLike: false,
-    },
-    {
-      name: "Варвара Н.",
-      time: "13.02.22 19:22",
-      comment: " Мне нравится как оформлена эта страница! ❤",
-      like: 75,
-      isLike: false,
-    }
-  ]
+      });
+    });
+  };
+
+
+
 
   const renderComments = () => {
     const listElement = document.getElementById("list");
-    const commentsHtml = comments.map((comment, index) => {
+    let commentsHtml = comments.map((comment, index) => {
       return `<li class="comment">
         <div class="comment-header">
           <div class="comment-name"> ${sanitizeHtml(comment.name)}</div>
@@ -109,7 +133,7 @@
     } else if (inputElement.value === '') {
       inputElement.style.backgroundColor = 'red';
       return;
-    } else if (textareaElement.value === ''){
+    } else if (textareaElement.value === '') {
       textareaElement.style.backgroundColor = 'red';
       return;
     } else {
@@ -124,7 +148,7 @@
       let month = addTimeElement.getMonth() < 10 ? '0' + addTimeElement.getMonth() : addTimeElement.getMonth();
       let newDate = `${date}.${month.slice(-1) + 1}.${year}
       ${hours}:${minutes}`;
-
+      
       comments.push({
         name: inputElement.value,
         time: newDate,
@@ -132,12 +156,12 @@
         like: 0,
         isLike: false,
       })
-
+      
       inputElement.value = '';
       textareaElement.value = '';
     };
-    renderComments(); 
-  })
+    renderComments();
+  });
 
   function sanitizeHtml(htmlString) {
     return htmlString.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -147,12 +171,13 @@
     const commentsAnswer = document.querySelectorAll('.comment');
     const formText = document.querySelector('.add-form-text');
 
-     commentsAnswer.forEach((comment, index) => {
+    commentsAnswer.forEach((comment, index) => {
       comment.addEventListener('click', () => {
         formText.value = `>${comments[index].name} \n ${comments[index].comment}`
-      })
-    })
-  }
+      });
+    });
+  };
+
 
   console.log("It works!");
 </script>
