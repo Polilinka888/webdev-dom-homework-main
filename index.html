@@ -32,13 +32,13 @@
   const likeButtonElements = document.querySelectorAll(".like-button");
 
   function fetchComments() {
-    return fetch("https://wedev-api.sky.pro/api/v1/:personal-key/comments" + "/comments")
+    return fetch("https://wedev-api.sky.pro/api/v1/polina-vasenkina/comments" )
     .then((res) => res.json())
     .then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
-          date: new Data(comment.date),
+          date: new Date(comment.date),
           text: comment.text,
           likes: comment.likes,
           isLiked: false,
@@ -49,7 +49,7 @@
   }
 
   function postComment(text, name) {
-    return fetch("https://wedev-api.sky.pro/api/v1/:personal-key/comments" + "/comments", {
+    return fetch("https://wedev-api.sky.pro/api/v1/polina-vasenkina/comments", {
       method: "POST",
       body: JSON.stringify({
         text,
@@ -64,11 +64,11 @@
         throw new Error("Неверный запрос");
       }
     })
-    .then(() => () => delay())
+    .then(() => () => setTimeoutay())
     .then(() => {
       return fetchComments();
     })
-    .then((data) => delay(data));
+    .then((data) => setTimeout(data));
   }
 
 
@@ -90,12 +90,21 @@
     });
   };
 
+  let comments = [];
+  let isInitiaLoading = true;
+  let isPosting = false;
+
+  fetchComments().then((data) => setTimeout(data))
+  .then((data) => {
+    comments = data;
+    isInitiaLoading = false;
+    renderComments();
+  });
 
 
-
-  const renderComments = () => {
+    const renderComments = () => {
     const listElement = document.getElementById("list");
-    let commentsHtml = comments.map((comment, index) => {
+    const commentsHtml = comments.map((comment, index) => {
       return `<li class="comment">
         <div class="comment-header">
           <div class="comment-name"> ${sanitizeHtml(comment.name)}</div>
@@ -123,6 +132,11 @@
     answerComment()
   };
   renderComments();
+
+
+
+
+  
 
   buttonElement.addEventListener('click', () => {
     const oldListElement = listElement.innerHTML;
