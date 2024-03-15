@@ -64,7 +64,6 @@
         throw new Error("Неверный запрос");
       }
     })
-    .then(() => () => setTimeoutay())
     .then(() => {
       return fetchComments();
     })
@@ -94,8 +93,7 @@
   let isInitiaLoading = true;
   let isPosting = false;
 
-  fetchComments().then((data) => setTimeout(data))
-  .then((data) => {
+  fetchComments().then((data) => {
     comments = data;
     isInitiaLoading = false;
     renderComments();
@@ -133,10 +131,6 @@
   };
   renderComments();
 
-
-
-
-  
 
   buttonElement.addEventListener('click', () => {
     const oldListElement = listElement.innerHTML;
@@ -183,7 +177,7 @@
 
   function answerComment() {
     const commentsAnswer = document.querySelectorAll('.comment');
-    const formText = document.querySelector('.add-form-text');
+    const formText = document.querySelectorAll('.add-form-text');
 
     commentsAnswer.forEach((comment, index) => {
       comment.addEventListener('click', () => {
@@ -191,6 +185,8 @@
       });
     });
   };
+
+  
 
 
   console.log("It works!");
