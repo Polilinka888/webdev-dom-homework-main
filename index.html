@@ -77,12 +77,12 @@
     likeButtonElements.forEach((el, index) => {
       el.addEventListener('click', (event) => {
         event.stopImmediatePropagation();
-        if (!comments[index].isLike) {
-          comments[index].like++;
-          comments[index].isLike = true;
+        if (!comments[index].isLiked) {
+          comments[index].likes++;
+          comments[index].isLiked = true;
         } else {
-          comments[index].like--;
-          comments[index].isLike = false;
+          comments[index].likes--;
+          comments[index].isLiked = false;
         }
         renderComments();
       });
@@ -106,19 +106,19 @@
       return `<li class="comment">
         <div class="comment-header">
           <div class="comment-name"> ${sanitizeHtml(comment.name)}</div>
-          <div> ${comment.time} </div>
+          <div> ${comment.date.toLocaleDateString()} </div>
         </div>
         <div class="comment-body">
           <div class="comment-text">
-            ${sanitizeHtml(comment.comment)}
+            ${sanitizeHtml(comment.text)}
           </div>
         </div>
         <div class="comment-footer">
           <div class="likes">
             <span class="likes-counter">
-              <div>${comment.like}</div>
+              <div>${comment.likes}</div>
             </span>
-            <button class="${comment.isLike ? 'like-button -active-like' : 'like-button'}" data-index ="${index}">
+            <button class="${comment.isLiked ? 'like-button -active-like' : 'like-button'}" data-index ="${index}">
             <div></div>
             </button>
           </div>
@@ -159,7 +159,7 @@
       
       comments.push({
         name: inputElement.value,
-        time: newDate,
+        time: new Date,
         comment: textareaElement.value,
         like: 0,
         isLike: false,
